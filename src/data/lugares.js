@@ -204,3 +204,6 @@ export const lugares = [
 export function getLugarPorId(id) {
   return lugares.find((lugar) => lugar.id === id)
 }
+
+// Exportamos el arreglo como default para poder usar `import lugares from ...`.
+export default lugares

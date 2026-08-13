@@ -8,6 +8,7 @@
         <!-- router-link evita recargar la página -->
         <router-link to="/">Home</router-link>
         <router-link to="/login">Login</router-link>
+        <router-link to="/favoritos">Favoritos</router-link>
 
         <!-- Sección que muestra el usuario logueado y botón de cerrar sesión -->
         <span v-if="isLoggedIn" class="app-user">
