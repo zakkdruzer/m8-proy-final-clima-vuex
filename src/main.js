@@ -1,11 +1,13 @@
+// Punto de entrada de la aplicación Vue: aquí se montan router y store.
+
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
-import './style.css' // Aquí puedes conectar tus estilos antiguos
+import router from './router' // Importa la configuración de rutas.
+import store from './store'   // Importa el store de Vuex (index.js de tu carpeta store).
 
-const app = createApp(App)
+const app = createApp(App) // Crea la instancia principal de la aplicación.
 
-// Registramos el router para tener navegación sin recargar la página
-app.use(router)
+app.use(router) // Registra el router para habilitar la navegación entre vistas.
+app.use(store)  // Registra el store de Vuex para manejar el estado global (incluye el módulo auth).
 
-app.mount('#app')
+app.mount('#app') // Monta la aplicación en el elemento raíz del index.html.

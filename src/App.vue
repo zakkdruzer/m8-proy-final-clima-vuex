@@ -6,6 +6,8 @@
       <nav class="app-nav">
         <!-- router-link evita recargar la página -->
         <router-link to="/">Home</router-link>
+        <!-- Nuevo enlace para ir a la vista de login -->
+        <router-link to="/login">Login</router-link>
       </nav>
     </header>
 

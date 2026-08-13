@@ -1,14 +1,17 @@
-// Store principal de Vuex, donde se registran los módulos globales de la aplicación.
+// src/store/index.js
+// Store principal de Vuex donde se registran los módulos globales de la app.
 
 import { createStore } from 'vuex'
-// Importa aquí tu módulo de clima existente.
-import auth from './modules/auth' // Importamos el módulo de autenticación recién creado.
+import auth from './modules/auth' // Importa el módulo de autenticación que creamos.
 
-export default createStore({
-  // Aquí puedes mantener tu estado/mutations/actions globales del clima si ya los tenías.
+// Puedes importar aquí otros módulos relacionados con el clima si ya existen.
+
+const store = createStore({
   modules: {
-    // Módulo que maneja el estado del usuario y autenticación.
+    // Módulo encargado del estado del usuario y autenticación.
     auth,
-    // Otros módulos como 'clima' se agregan aquí.
+    // Otros módulos (por ejemplo, 'clima') se agregan aquí.
   },
 })
+
+export default store // Exporta el store para usarlo en main.js.
