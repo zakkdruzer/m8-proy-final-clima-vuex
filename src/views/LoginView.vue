@@ -5,7 +5,7 @@
     <h1 class="login__title">Iniciar sesión</h1>
 
     <!-- Formulario de login: captura email y contraseña. -->
-    <form class="login__form" @submit.prevent="handleSubmit">
+    <form class="card login__form" @submit.prevent="handleSubmit">
       <!-- Campo de correo electrónico del usuario. -->
       <div class="login__field">
         <label class="login__label" for="email">Correo electrónico</label>

@@ -1,0 +1,49 @@
+/* Tema claro por defecto (ya lo tenías más o menos así). */
+.app.app--light {
+  background-color: #f3f4f6; /* Fondo claro general. */
+  color: #0f172a;            /* Texto oscuro. */
+}
+
+/* Tema oscuro coherente. */
+.app.app--dark {
+  background-color: #020617; /* Fondo general muy oscuro. */
+  color: #e5e7eb;            /* Texto claro. */
+}
+
+/* Header mantiene contraste en ambos temas. */
+.app-header {
+  background: #0f172a;       /* Azul oscuro neutro. */
+}
+
+/* Links del nav se ven bien en ambos temas. */
+.app-nav a {
+  color: #38bdf8;
+}
+
+/* Tarjetas comunes (LugarCard, Favoritos, Login, Preferencias) en tema claro. */
+.card {
+  background-color: #ffffff;
+  color: inherit;
+}
+
+/* Tarjetas en tema oscuro: no blancas, pero legibles. */
+.app.app--dark .card {
+  background-color: #0b1220; /* Fondo de tarjetas algo más claro que el fondo global. */
+  color: #e5e7eb;
+}
+
+/* Inputs y selects en tema claro. */
+input,
+select {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5f5;
+}
+
+/* Inputs y selects en tema oscuro. */
+.app.app--dark input,
+.app.app--dark select {
+  background-color: #020617;
+  color: #e5e7eb;
+  border-color: #334155;
+}

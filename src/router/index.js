@@ -6,6 +6,7 @@ import PlaceDetailView from '../views/PlaceDetailView.vue'
 import LoginView from '../views/LoginView.vue'
 import FavoritesView from '../views/FavoritesView.vue' // Nueva vista para lugares favoritos.
 import store from '../store' // Importamos el store para consultar el estado de auth.
+import PreferencesView from '../views/PreferencesView.vue' // Vista de preferencias de clima.
 
 const routes = [
   {
@@ -32,6 +33,12 @@ const routes = [
       // Indicamos que esta ruta requiere que el usuario esté autenticado.
       requiresAuth: true,
     },
+  },
+  {
+    path: '/preferencias',
+    name: 'preferences',
+    component: PreferencesView,
+    meta: { requiresAuth: true }, // También protegida.
   },
 ]
 

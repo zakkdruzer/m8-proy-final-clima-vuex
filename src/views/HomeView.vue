@@ -1,127 +1,152 @@
+<!-- src/views/HomeView.vue -->
+<!-- Vista principal que muestra el clima actual de los lugares. -->
 <template>
   <section class="home">
-    <h2>Clima actual de lugares</h2>
+    <h1 class="home__title">Clima actual de lugares</h1>
 
-    <div class="home-controls">
-      <label>
+    <!-- Controles de búsqueda y unidad de temperatura. -->
+    <div class="home__controls">
+      <label class="home__label" for="search">
         Buscar lugar:
-        <input
-          type="text"
-          v-model="searchTerm"
-          placeholder="Escribe el nombre del lugar"
-        />
       </label>
+      <input
+        id="search"
+        class="home__input"
+        type="text"
+        v-model="searchTerm"
+        placeholder="Escribe el nombre del lugar"
+      />
 
-      <label>
+      <label class="home__label" for="unit">
         Unidad:
-        <select v-model="temperatureUnit">
-          <option value="C">°C</option>
-          <option value="F">°F</option>
-        </select>
       </label>
+      <select
+        id="unit"
+        class="home__select"
+        v-model="selectedUnit"
+        @change="handleUnitChange"
+      >
+        <option value="C">°C</option>
+        <option value="F">°F</option>
+      </select>
     </div>
 
-    <p v-if="lugaresFiltrados.length === 0">
-      No se encontraron lugares para ese término.
-    </p>
+    <!-- Lista de lugares filtrados. -->
+    <div v-if="filteredPlaces.length" class="home__list">
+      <LugarCard
+        v-for="place in filteredPlaces"
+        :key="place.id"
+        class="home__card"
+        :lugar="place"
+        :unidad="selectedUnit"
+        @ver-detalle="goToPlace"
+      />
+    </div>
 
-    <ul v-else class="place-list">
-      <li
-        v-for="lugar in lugaresFiltrados"
-        :key="lugar.id"
-        class="place-card"
-        @click="irADetalle(lugar.id)"
-      >
-        <header class="place-card__header">
-          <h3>{{ lugar.nombre }}</h3>
-          <span class="place-card__icono">{{ lugar.icono }}</span>
-        </header>
-        <p class="place-card__region">{{ lugar.region }}</p>
-        <p>
-          Estado actual: <strong>{{ lugar.estadoActual }}</strong>
-        </p>
-        <p>
-          Temperatura actual:
-          <strong>{{ formatearTemperatura(lugar.tempActual) }}</strong>
-        </p>
-        <p>
-          Humedad: <strong>{{ lugar.humedad }}%</strong> ·
-          Viento: <strong>{{ lugar.viento }} km/h</strong>
-        </p>
-      </li>
-    </ul>
+    <!-- Mensaje cuando no hay resultados. -->
+    <p v-else class="home__empty">
+      No se encontraron lugares que coincidan con la búsqueda.
+    </p>
   </section>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script>
+// Vista principal: consume datos de lugares y preferencias de unidad.
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { lugares } from '../data/lugares'
-import { getSavedUnit, saveUnit } from '../config/temperatureConfig'
+import LugarCard from '../components/LugarCard.vue'
 
-// Estado para búsqueda y unidad
-const searchTerm = ref('')
-const temperatureUnit = ref(getSavedUnit())
+export default {
+  name: 'HomeView',
+  components: {
+    LugarCard,
+  },
+  setup() {
+    const router = useRouter()
+    const store = useStore()
 
-const router = useRouter()
+    // Preferencias del usuario (para inicializar unidad).
+    const userPreferences = computed(
+      () => store.getters['auth/userPreferences']
+    )
 
-const lugaresFiltrados = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim()
-  if (!term) return lugares
-  return lugares.filter((lugar) =>
-    lugar.nombre.toLowerCase().includes(term)
-  )
-})
+    // Estado local de búsqueda y unidad.
+    const searchTerm = ref('')
+    const selectedUnit = ref(userPreferences.value.temperatureUnit || 'C')
 
-function formatearTemperatura(tempC) {
-  if (temperatureUnit.value === 'C') {
-    return `${tempC} °C`
-  }
-  const tempF = tempC * 9 / 5 + 32
-  return `${tempF.toFixed(1)} °F`
+    // Cuando el usuario cambia la unidad, actualizamos también las preferencias globales.
+    const handleUnitChange = () => {
+      store.dispatch('auth/updatePreferences', {
+        temperatureUnit: selectedUnit.value,
+      })
+    }
+
+    // Filtramos lugares según el término de búsqueda.
+    const filteredPlaces = computed(() => {
+      const term = searchTerm.value.toLowerCase().trim()
+      if (!term) return lugares
+      return lugares.filter((place) =>
+        place.nombre.toLowerCase().includes(term)
+      )
+    })
+
+    // Navegamos al detalle del lugar seleccionado.
+    const goToPlace = (id) => {
+      router.push({ name: 'place-detail', params: { id } })
+    }
+
+    return {
+      searchTerm,
+      selectedUnit,
+      filteredPlaces,
+      handleUnitChange,
+      goToPlace,
+    }
+  },
 }
-
-function irADetalle(id) {
-  router.push({ name: 'place-detail', params: { id } })
-}
-
-// Guardar la unidad en localStorage cuando cambie
-watch(temperatureUnit, (nuevaUnidad) => {
-  saveUnit(nuevaUnidad)
-})
 </script>
 
 <style scoped>
 .home {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 2rem auto;
 }
 
-.home-controls {
-  display: flex;
-  gap: 1rem;
+.home__title {
   margin-bottom: 1rem;
-  flex-wrap: wrap;
+  font-size: 1.6rem;
 }
 
-.place-list {
-  list-style: none;
-  padding: 0;
+.home__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.home__label {
+  font-weight: 600;
+}
+
+.home__input,
+.home__select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.home__list {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
 }
 
-.place-card {
-  border: 1px solid #cbd5f5;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  cursor: pointer;
-  background: #f9fafb;
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-
-.place-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+.home__empty {
+  margin-top: 1rem;
+  font-style: italic;
 }
 </style>
