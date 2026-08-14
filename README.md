@@ -1,70 +1,91 @@
-# App de Clima SPA (Módulo 6)
+# App de Clima SPA – Módulo 7 (Usuarios, Login y Estado Global)
 
-Aplicación de clima construida como SPA usando Vue 3 + Vite, basada en una lista de lugares de Chile con información de clima actual, pronóstico semanal y estadísticas calculadas a partir de los datos del módulo anterior.
+Aplicación de clima construida con Vue 3 + Vite que muestra el clima actual de distintos lugares de Chile y, en esta iteración del módulo 7, agrega un sistema básico de usuarios con login, estado global en Vuex y personalización de preferencias.
 
-## Vistas principales
+## Sistema de usuarios y autenticación
 
-- **Home**  
-  - Muestra un listado de al menos 5 lugares con su clima actual (nombre, región, estado, temperatura, humedad y viento).  
-  - Permite buscar lugares por nombre usando un input con `v-model`.  
-  - Permite elegir la unidad de temperatura (°C / °F), que se guarda y se reutiliza en toda la app.
+El sistema de usuarios está pensado para fines educativos y utiliza datos simulados en el front (usuarios mock) en lugar de un backend real.
 
-- **Detalle de lugar**  
-  - Muestra información ampliada de un lugar seleccionado desde Home.  
-  - Incluye clima actual, detalles de humedad/viento, pronóstico semanal y estadísticas de la semana (mínima, máxima y promedio).  
+### Credenciales de prueba
 
-## Rutas de Vue Router
+El sistema de login utiliza usuarios simulados definidos en el front. Para probar la autenticación se puede usar el siguiente usuario de ejemplo:
 
-La navegación se implementa con Vue Router y se maneja sin recargar la página.
+- Email: `demo@climaapp.com`
+- Contraseña: `123456`
 
-- **`/`**  
-  - Ruta principal (Home).  
-  - Lista los lugares y permite seleccionar uno para ver su detalle.
+Al iniciar sesión con estas credenciales, la app mostrará el nombre del usuario en el header, habilitará las rutas protegidas (`/favoritos`, `/preferencias`) y aplicará sus preferencias de clima (unidad y tema). 
 
-- **`/place/:id`**  
-  - Ruta dinámica para el detalle de cada lugar.  
-  - `id` corresponde al identificador de cada lugar (por ejemplo, `santiago`, `valparaiso`, etc.).  
+### Qué se guarda de cada usuario
 
-Para compatibilidad con GitHub Pages se utiliza `createWebHashHistory`, por lo que las rutas se verán como:
+Cada usuario incluye:
 
-- `#/` para Home  
-- `#/place/:id` para el detalle
+- `name`: nombre para mostrar en la interfaz (header/navbar).
+- `email`: correo usado para el login.
+- `preferences`:
+  - `temperatureUnit`: unidad de temperatura preferida (`C` o `F`).
+  - `theme`: tema visual (`light` o `dark`).
+- `favorites`: arreglo de IDs de lugares favoritos (coinciden con los IDs de `src/data/lugares.js`).
 
-## Datos de clima
+Estos datos se almacenan en el módulo `auth` de Vuex, junto con:
 
-Los datos de clima se cargan desde un módulo local en `src/data/lugares.js`, basado en la estructura trabajada en el módulo 4:
+- `isAuthenticated`: flag que indica si hay sesión activa.
+- `loginError`: mensaje de error de login para mostrar en la vista de inicio de sesión.
 
-- Cada lugar incluye:  
-  - `id`, `nombre`, `region`, `tempActual`, `estadoActual`, `icono`, `humedad`, `viento`.  
-- Cada lugar tiene un `pronosticoSemanal` con:
-  - `dia`, `min`, `max`, `estado`.  
-- Las estadísticas semanales (mínima, máxima y promedio) se calculan en la vista de detalle a partir del `pronosticoSemanal`.
+### Flujo de login y logout
 
-## Interacción y componentes
+- El usuario ingresa email y contraseña en `/login`.
+- La acción `auth/login` compara las credenciales con un arreglo de usuarios mock.
+- En caso de éxito:
+  - Se guarda el usuario (sin contraseña) en Vuex.
+  - `isAuthenticated` pasa a `true`.
+  - La app redirige a la ruta Home (`/`).
+- En caso de error:
+  - Se define un mensaje claro de error en `loginError` (“Usuario o contraseña incorrectos”).
+  - No se mantiene usuario en el estado.
 
-La app utiliza:
+En el header se muestra:
 
-- `v-model` para búsqueda de lugares y selección de unidad de temperatura.
-- `v-for` para renderizar listas de lugares y días del pronóstico.
-- `v-if` / `v-else` para mostrar mensajes cuando no se encuentran resultados.
-- `@click` para navegar al detalle y volver a Home.
+- El texto “Conectado como: [Nombre]” cuando hay sesión activa.
+- Un botón “Cerrar sesión” que dispara la acción `auth/logout`, limpia el estado del usuario y redirige a `/login`.
 
-Componentes principales:
+## Rutas relacionadas con autenticación y personalización
 
-- `App.vue` como componente raíz.  
-- `HomeView.vue` y `PlaceDetailView.vue` como vistas.  
-- Componentes reutilizables:
-  - `LugarCard.vue` para cada tarjeta de lugar en Home.
-  - `PronosticoSemanal.vue` para la lista de días de pronóstico.
-  - `EstadisticasSemanales.vue` para mostrar las estadísticas de la semana.
+La navegación se implementa con Vue Router usando `createWebHashHistory` para compatibilidad con GitHub Pages.
 
-## Cómo ejecutar el proyecto localmente
+Rutas principales:
 
-Requisitos:
+- `/`  
+  Home pública que muestra la lista de lugares y su clima actual. 
+- `/place/:id`  
+  Detalle ampliado del lugar, con clima actual, pronóstico semanal y estadísticas.
+- `/login`  
+  Vista de formulario de inicio de sesión (email + contraseña), con manejo de éxito y error.
+- `/favoritos`  
+  Vista protegida que muestra los lugares favoritos del usuario autenticado. Solo accesible si `isAuthenticated` es `true`; en caso contrario se redirige a `/login`.
+- `/preferencias`  
+  Vista protegida donde el usuario puede configurar sus preferencias de clima (unidad °C/°F y tema claro/oscuro). También requiere sesión activa y redirige a `/login` si no hay usuario autenticado.
+
+Las rutas protegidas usan un guard global en el router que revisa la propiedad `requiresAuth` en `meta` y el estado `auth/isLoggedIn` en Vuex.
+
+## Personalización según usuario
+
+La aplicación ajusta parte de la interfaz según el usuario que ha iniciado sesión:
+
+- **Lugares favoritos:**  
+  La vista `/favoritos` lee el arreglo de IDs de favoritos desde `auth.userFavorites` y filtra la lista de lugares de `src/data/lugares.js` para mostrar solo los favoritos del usuario.
+- **Preferencias de clima:**  
+  La vista `/preferencias` permite modificar:
+  - Unidad de temperatura (`C` o `F`), que se reutiliza en Home y Favoritos.
+  - Tema visual (`light` o `dark`), que afecta el aspecto general de la app. 
+  Estos datos se actualizan mediante la acción `auth/updatePreferences` y se leen en distintas vistas a través de getters de Vuex.
+
+## Cómo ejecutar el proyecto
+
+### Requisitos previos
 
 - Node.js y npm instalados.
 
-Pasos:
+### Pasos para correr el proyecto localmente
 
 ```bash
 # Instalar dependencias
@@ -72,89 +93,39 @@ npm install
 
 # Ejecutar en modo desarrollo
 npm run dev
+```
 
-# Build para producción
+Por defecto la app se sirve en `http://localhost:5173/` (puede variar según la configuración de Vite).
+
+### Build y preview de producción
+
+```bash
+# Generar build para producción
 npm run build
 
 # Previsualizar el build
 npm run preview
 ```
 
-La app se sirve por defecto en `http://localhost:5173/` (puede variar según la configuración de Vite).
+## Estado global con Vuex
 
-## Deploy en GitHub Pages
+El estado global se maneja con Vuex e incluye al menos el módulo `auth` para autenticación y preferencias.
 
-Para publicar la app en GitHub Pages se realizaron estos ajustes:
+El módulo `auth` define:
 
-1. **Configurar `base` en `vite.config.js`**
+- `state`: usuario actual, `isAuthenticated`, `loginError`.
+- `mutations`: para iniciar sesión, cerrar sesión y actualizar preferencias.
+- `actions`: para manejar el proceso de login/logout y cambios en preferencias.
+- `getters`: para acceder de forma cómoda a `isLoggedIn`, `userName`, `userPreferences` y `userFavorites`.
 
-```js
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+Los componentes (Home, Login, Favoritos, Preferencias, header) leen los datos del usuario desde Vuex usando `useStore` y `computed`.
 
-export default defineConfig({
-  plugins: [vue()],
-  base: '/NOMBRE-DEL-REPO/', // reemplazar por el nombre real del repositorio
-})
-```
+---
 
-2. **Configurar Vue Router con `createWebHashHistory`**
+## Enlace al repo:
 
-```js
-import { createRouter, createWebHashHistory } from 'vue-router'
+https://github.com/zakkdruzer/m7-proy-final-clima-vuex
 
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-})
+## Puedes ver el resultado en:
 
-export default router
-```
-
-Esto asegura que las rutas funcionen correctamente al recargar páginas en GitHub Pages.
-
-3. **Instalar y configurar `gh-pages`**
-
-En `package.json` se agregaron los scripts:
-
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-  }
-}
-```
-
-Y se instaló la dependencia:
-
-```bash
-npm install gh-pages --save-dev
-```
-
-4. **Proceso de deploy**
-
-```bash
-npm run deploy
-```
-
-Esto genera la carpeta `dist` y publica el contenido en la rama `gh-pages`. En GitHub, en **Settings → Pages**, se configura:
-
-- Source: `Deploy from a branch`
-- Branch: `gh-pages`, carpeta `/`
-
-La app queda publicada en:
-
-```text
-https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/
-```
-
-(Actualiza esta línea con tu usuario y el nombre real del repo.)
-
-## Enlace al repositorio
-
-- Repositorio público: `https://github.com/zakkdruzer/m6-proy-final-app-clima-vue`
-- Deploy en GitHub Pages: `https://zakkdruzer.github.io/m6-proy-final-app-clima-vue/`
+https://zakkdruzer.github.io/m7-proy-final-clima-vuex/#/
