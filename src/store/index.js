@@ -1,18 +1,21 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex";
+import { getWeatherForecast, searchPlacesByName } from "@/services/weatherApi";
+
+import { normalizePlace, normalizeWeather } from "@/services/weatherAdapter";
 
 const getInitialFavorites = () => {
   try {
-    return JSON.parse(localStorage.getItem('weather-favorites')) || []
+    return JSON.parse(localStorage.getItem("weather-favorites")) || [];
   } catch {
-    return []
+    return [];
   }
-}
+};
 
 const getInitialUnit = () => {
-  const savedUnit = localStorage.getItem('weather-unit')
+  const savedUnit = localStorage.getItem("weather-unit");
 
-  return savedUnit === 'fahrenheit' ? 'fahrenheit' : 'celsius'
-}
+  return savedUnit === "fahrenheit" ? "fahrenheit" : "celsius";
+};
 
 const store = createStore({
   state: () => ({
@@ -27,116 +30,195 @@ const store = createStore({
     searchError: null,
 
     unit: getInitialUnit(),
-    favorites: getInitialFavorites()
+    favorites: getInitialFavorites(),
   }),
 
   getters: {
     temperatureSymbol: (state) => {
-      return state.unit === 'fahrenheit' ? '°F' : '°C'
+      return state.unit === "fahrenheit" ? "°F" : "°C";
     },
 
     isFavorite: (state) => (placeId) => {
-      return state.favorites.some((place) => place.id === placeId)
+      return state.favorites.some((place) => place.id === placeId);
     },
 
     favoritePlaces: (state) => {
-      return state.favorites
+      return state.favorites;
     },
 
     hasSelectedPlace: (state) => {
-      return Boolean(state.selectedPlace)
+      return Boolean(state.selectedPlace);
     },
 
     hasWeather: (state) => {
-      return Boolean(state.weather)
-    }
+      return Boolean(state.weather);
+    },
   },
 
   mutations: {
     SET_PLACES(state, places) {
-      state.places = places
+      state.places = places;
     },
 
     SET_SELECTED_PLACE(state, place) {
-      state.selectedPlace = place
+      state.selectedPlace = place;
     },
 
     SET_WEATHER(state, weather) {
-      state.weather = weather
+      state.weather = weather;
     },
 
     SET_LOADING(state, value) {
-      state.loading = value
+      state.loading = value;
     },
 
     SET_ERROR(state, error) {
-      state.error = error
+      state.error = error;
     },
 
     SET_SEARCH_LOADING(state, value) {
-      state.searchLoading = value
+      state.searchLoading = value;
     },
 
     SET_SEARCH_ERROR(state, error) {
-      state.searchError = error
+      state.searchError = error;
     },
 
     SET_UNIT(state, unit) {
-      state.unit = unit
+      state.unit = unit;
     },
 
     SET_FAVORITES(state, favorites) {
-      state.favorites = favorites
-    }
+      state.favorites = favorites;
+    },
   },
 
   actions: {
+    async searchPlaces({ commit }, name) {
+      const normalizedName = name.trim();
+
+      if (normalizedName.length < 2) {
+        commit(
+          "SET_SEARCH_ERROR",
+          "Escribe al menos dos caracteres para buscar un lugar.",
+        );
+        commit("SET_PLACES", []);
+        return [];
+      }
+
+      commit("SET_SEARCH_LOADING", true);
+      commit("SET_SEARCH_ERROR", null);
+
+      try {
+        const results = await searchPlacesByName(normalizedName);
+        const places = results.map(normalizePlace);
+
+        commit("SET_PLACES", places);
+
+        if (places.length === 0) {
+          commit("SET_SEARCH_ERROR", "No encontramos lugares con ese nombre.");
+        }
+
+        return places;
+      } catch (error) {
+        console.error("Error al buscar lugares:", error);
+
+        commit("SET_PLACES", []);
+        commit(
+          "SET_SEARCH_ERROR",
+          "No fue posible buscar lugares. Revisa tu conexión e inténtalo nuevamente.",
+        );
+
+        return [];
+      } finally {
+        commit("SET_SEARCH_LOADING", false);
+      }
+    },
+
+    async loadWeather({ commit, state }, place) {
+      if (!place?.latitude || !place?.longitude) {
+        commit(
+          "SET_ERROR",
+          "El lugar seleccionado no tiene coordenadas válidas.",
+        );
+        return null;
+      }
+
+      commit("SET_LOADING", true);
+      commit("SET_ERROR", null);
+      commit("SET_SELECTED_PLACE", place);
+
+      try {
+        const apiData = await getWeatherForecast(
+          place.latitude,
+          place.longitude,
+          state.unit,
+        );
+
+        const weather = normalizeWeather(apiData);
+
+        commit("SET_WEATHER", weather);
+
+        return weather;
+      } catch (error) {
+        console.error("Error al obtener el clima:", error);
+
+        commit("SET_WEATHER", null);
+        commit(
+          "SET_ERROR",
+          "No fue posible consultar el clima. Intenta nuevamente.",
+        );
+
+        return null;
+      } finally {
+        commit("SET_LOADING", false);
+      }
+    },
     setSelectedPlace({ commit }, place) {
-      commit('SET_SELECTED_PLACE', place)
+      commit("SET_SELECTED_PLACE", place);
     },
 
     setPlaces({ commit }, places) {
-      commit('SET_PLACES', places)
+      commit("SET_PLACES", places);
     },
 
     setWeather({ commit }, weather) {
-      commit('SET_WEATHER', weather)
+      commit("SET_WEATHER", weather);
     },
 
-    changeUnit({ commit }, unit) {
-      if (!['celsius', 'fahrenheit'].includes(unit)) {
-        return
+    async changeUnit({ commit, state, dispatch }, unit) {
+      if (!["celsius", "fahrenheit"].includes(unit)) {
+        return;
       }
 
-      commit('SET_UNIT', unit)
-      localStorage.setItem('weather-unit', unit)
+      commit("SET_UNIT", unit);
+      localStorage.setItem("weather-unit", unit);
+
+      if (state.selectedPlace) {
+        await dispatch("loadWeather", state.selectedPlace);
+      }
     },
 
     toggleFavorite({ commit, state }, place) {
       const alreadyFavorite = state.favorites.some(
-        (favorite) => favorite.id === place.id
-      )
+        (favorite) => favorite.id === place.id,
+      );
 
       const favorites = alreadyFavorite
-        ? state.favorites.filter(
-            (favorite) => favorite.id !== place.id
-          )
-        : [...state.favorites, place]
+        ? state.favorites.filter((favorite) => favorite.id !== place.id)
+        : [...state.favorites, place];
 
-      commit('SET_FAVORITES', favorites)
+      commit("SET_FAVORITES", favorites);
 
-      localStorage.setItem(
-        'weather-favorites',
-        JSON.stringify(favorites)
-      )
+      localStorage.setItem("weather-favorites", JSON.stringify(favorites));
     },
 
     clearWeatherState({ commit }) {
-      commit('SET_SELECTED_PLACE', null)
-      commit('SET_WEATHER', null)
-      commit('SET_ERROR', null)
-    }
-  }
-})
+      commit("SET_SELECTED_PLACE", null);
+      commit("SET_WEATHER", null);
+      commit("SET_ERROR", null);
+    },
+  },
+});
 
-export default store
+export default store;
