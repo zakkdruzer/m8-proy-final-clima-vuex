@@ -9,23 +9,13 @@
       <label class="home__label" for="search">
         Buscar lugar:
       </label>
-      <input
-        id="search"
-        class="home__input"
-        type="text"
-        v-model="searchTerm"
-        placeholder="Escribe el nombre del lugar"
-      />
+      <input id="search" class="home__input" type="text" v-model="searchTerm"
+        placeholder="Escribe el nombre del lugar" />
 
       <label class="home__label" for="unit">
         Unidad:
       </label>
-      <select
-        id="unit"
-        class="home__select"
-        v-model="selectedUnit"
-        @change="handleUnitChange"
-      >
+      <select id="unit" class="home__select" v-model="selectedUnit" @change="handleUnitChange">
         <option value="C">°C</option>
         <option value="F">°F</option>
       </select>
@@ -33,14 +23,8 @@
 
     <!-- Lista de lugares filtrados. -->
     <div v-if="filteredPlaces.length" class="home__list">
-      <LugarCard
-        v-for="place in filteredPlaces"
-        :key="place.id"
-        class="home__card"
-        :lugar="place"
-        :unidad="selectedUnit"
-        @ver-detalle="goToPlace"
-      />
+      <LugarCard v-for="place in filteredPlaces" :key="place.id" class="home__card" :lugar="place"
+        :unidad="selectedUnit" @ver-detalle="goToPlace" />
     </div>
 
     <!-- Mensaje cuando no hay resultados. -->
@@ -94,7 +78,12 @@ export default {
 
     // Navegamos al detalle del lugar seleccionado.
     const goToPlace = (id) => {
-      router.push({ name: 'place-detail', params: { id } })
+      router.push({
+        name: 'place-detail',
+        params: {
+          id: place.id
+        }
+      })
     }
 
     return {

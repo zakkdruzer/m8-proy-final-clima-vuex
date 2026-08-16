@@ -47,3 +47,154 @@ select {
   color: #e5e7eb;
   border-color: #334155;
 }
+
+/* Estilos nuevos */
+
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1f2937;
+  background-color: #f4f8fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+  color: #ffffff;
+  background-color: #0f4c81;
+}
+
+.app-header__brand {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-header__link {
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.app-header__link:hover,
+.app-header__link:focus-visible,
+.app-header__link.router-link-exact-active {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.page {
+  width: min(100% - 2rem, 1100px);
+  flex: 1;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.page__header {
+  margin-bottom: 2rem;
+}
+
+.page__header h1 {
+  margin: 0 0 0.5rem;
+}
+
+.page__header p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.empty-state {
+  padding: 2rem;
+  border: 1px solid #dbe5ef;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.button-link {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background-color: #0f4c81;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button-link:hover,
+.button-link:focus-visible {
+  background-color: #0b3a63;
+}
+
+.not-found {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.not-found__code {
+  margin: 0;
+  color: #0f4c81;
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.app-footer {
+  padding: 1rem;
+  color: #4b5563;
+  background-color: #e8f0f7;
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .app-header__nav {
+    width: 100%;
+  }
+}
