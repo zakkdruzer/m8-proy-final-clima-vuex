@@ -12,6 +12,7 @@ export function normalizePlace(place) {
 
     name,
     country,
+    countryCode: place.country_code || '',
     admin1,
 
     latitude: place.latitude,
@@ -51,6 +52,7 @@ export function normalizeWeather(apiData) {
     forecast,
 
     timezone: apiData.timezone || '',
+
     units: {
       temperature: apiData.current_units?.temperature_2m || '°C',
       windSpeed: apiData.current_units?.wind_speed_10m || 'km/h',

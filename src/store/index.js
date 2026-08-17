@@ -108,10 +108,22 @@ const store = createStore({
 
       commit("SET_SEARCH_LOADING", true);
       commit("SET_SEARCH_ERROR", null);
+      commit("SET_PLACES", []);
+      commit("SET_SELECTED_PLACE", null);
+      commit("SET_WEATHER", null);
+      commit("SET_ERROR", null);
 
       try {
         const results = await searchPlacesByName(normalizedName);
-        const places = results.map(normalizePlace);
+
+        const normalizedResults = results.map(normalizePlace);
+
+        const chileResults = normalizedResults.filter((place) => {
+          return place.countryCode === "CL";
+        });
+
+        const places =
+          chileResults.length > 0 ? chileResults : normalizedResults;
 
         commit("SET_PLACES", places);
 
