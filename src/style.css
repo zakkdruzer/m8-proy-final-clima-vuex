@@ -743,3 +743,60 @@ a {
     flex-direction: column;
   }
 }
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 5px solid #b91c1c;
+  border-radius: 0.5rem;
+  color: #7f1d1d;
+  background-color: #fee2e2;
+}
+
+.error-message h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.error-message p {
+  margin: 0;
+}
+
+.error-message__retry {
+  flex-shrink: 0;
+  padding: 0.6rem 0.85rem;
+  border: 0;
+  border-radius: 0.45rem;
+  color: #ffffff;
+  background-color: #991b1b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.error-message__retry:hover,
+.error-message__retry:focus-visible {
+  background-color: #7f1d1d;
+}
+
+.not-found__content {
+  max-width: 650px;
+}
+
+.not-found code {
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.3rem;
+  color: #7f1d1d;
+  background-color: #fee2e2;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .error-message {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

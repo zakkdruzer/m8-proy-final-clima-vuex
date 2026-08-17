@@ -63,6 +63,12 @@ async function loadPlaceFromRoute() {
   }
 }
 
+async function retryLoadWeather() {
+  if (selectedPlace.value) {
+    await store.dispatch('loadWeather', selectedPlace.value)
+  }
+}
+
 onMounted(() => {
   loadPlaceFromRoute()
 })
@@ -90,7 +96,8 @@ onMounted(() => {
 
     <LoadingState v-if="loading" message="Consultando información meteorológica..." />
 
-    <ErrorMessage v-if="error" :message="error" />
+    <ErrorMessage v-if="error" :message="error" :retry-label="selectedPlace ? 'Reintentar consulta' : ''"
+      @retry="retryLoadWeather" />
 
     <section v-if="weather && selectedPlace" class="weather-current">
       <h2>Condiciones actuales</h2>

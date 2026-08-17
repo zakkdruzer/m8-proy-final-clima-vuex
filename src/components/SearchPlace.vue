@@ -1,6 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 
+defineProps({
+  loading: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const emit = defineEmits(['search'])
 
 const searchTerm = ref('')
@@ -21,10 +28,11 @@ function submitSearch() {
         type="search"
         placeholder="Ejemplo: Punta Arenas"
         autocomplete="off"
+        :disabled="loading"
       >
 
-      <button type="submit">
-        Buscar
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Buscando...' : 'Buscar' }}
       </button>
     </div>
   </form>

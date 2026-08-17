@@ -176,11 +176,16 @@ const store = createStore({
     },
 
     async loadWeather({ commit, state }, place) {
-      if (!place?.latitude || !place?.longitude) {
+      if (
+        !place ||
+        typeof place.latitude !== "number" ||
+        typeof place.longitude !== "number"
+      ) {
         commit(
           "SET_ERROR",
           "El lugar seleccionado no tiene coordenadas válidas.",
         );
+
         return null;
       }
 
