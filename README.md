@@ -143,4 +143,4 @@ Si en el futuro se utiliza una API con credenciales, se debe crear un archivo `.
 
 ## Autor
 
-Proyecto realizado por [José](https://github.com/zakkdruzer) como entrega final del Módulo 8 del Bootcamp Front-end.
+Proyecto realizado por [José Gajardo Soto](https://github.com/zakkdruzer) como entrega final del Módulo 8 del Bootcamp Front-end.
