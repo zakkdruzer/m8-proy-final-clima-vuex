@@ -1,131 +1,146 @@
-# App de Clima SPA – Módulo 7 (Usuarios, Login y Estado Global)
+# Clima SPA
 
-Aplicación de clima construida con Vue 3 + Vite que muestra el clima actual de distintos lugares de Chile y, en esta iteración del módulo 7, agrega un sistema básico de usuarios con login, estado global en Vuex y personalización de preferencias.
+Aplicación meteorológica desarrollada como proyecto final del Módulo 8. Permite buscar ciudades, consultar información del clima en tiempo real, revisar un pronóstico semanal, visualizar estadísticas y alertas meteorológicas, cambiar la unidad de temperatura y gestionar lugares favoritos.
 
-## Sistema de usuarios y autenticación
+## Demo y repositorio
 
-El sistema de usuarios está pensado para fines educativos y utiliza datos simulados en el front (usuarios mock) en lugar de un backend real.
+- Repositorio: [GitHub - m8-proy-final-clima-vuex](https://github.com/zakkdruzer/m8-proy-final-clima-vuex)
+- Demo: [Ver aplicación publicada](https://zakkdruzer.github.io/m8-proy-final-clima-vuex/)
 
-### Credenciales de prueba
+## Características
 
-El sistema de login utiliza usuarios simulados definidos en el front. Para probar la autenticación se puede usar el siguiente usuario de ejemplo:
+- SPA creada con Vue 3 y Vite.
+- Navegación con Vue Router.
+- Estado global con Vuex.
+- Búsqueda de ciudades y localidades.
+- Consulta de clima actual mediante una API externa.
+- Pronóstico meteorológico para 7 días.
+- Estadísticas semanales:
+  - Temperatura mínima.
+  - Temperatura máxima.
+  - Temperatura promedio.
+  - Conteo de días lluviosos.
+  - Conteo de días despejados.
+  - Conteo de días nublados.
+- Alertas meteorológicas generadas mediante reglas:
+  - Posible ola de calor.
+  - Semana lluviosa.
+  - Riesgo de heladas.
+  - Vientos fuertes.
+  - Condiciones estables.
+- Cambio entre grados Celsius y Fahrenheit.
+- Favoritos persistentes mediante LocalStorage.
+- Persistencia del último lugar consultado y sus datos meteorológicos.
+- Mensajes de carga, validación, errores y opción de reintento.
+- Página 404 para rutas inexistentes.
+- Diseño adaptable a móvil, tablet y escritorio.
 
-- Email: `demo@climaapp.com`
-- Contraseña: `123456`
+## Tecnologías
 
-Al iniciar sesión con estas credenciales, la app mostrará el nombre del usuario en el header, habilitará las rutas protegidas (`/favoritos`, `/preferencias`) y aplicará sus preferencias de clima (unidad y tema). 
+- Vue 3
+- Vite
+- Vue Router
+- Vuex
+- Axios
+- JavaScript
+- CSS
+- Git y GitHub Pages
 
-### Qué se guarda de cada usuario
+## API utilizada
 
-Cada usuario incluye:
+La aplicación utiliza [Open-Meteo](https://open-meteo.com/) para obtener información meteorológica.
 
-- `name`: nombre para mostrar en la interfaz (header/navbar).
-- `email`: correo usado para el login.
-- `preferences`:
-  - `temperatureUnit`: unidad de temperatura preferida (`C` o `F`).
-  - `theme`: tema visual (`light` o `dark`).
-- `favorites`: arreglo de IDs de lugares favoritos (coinciden con los IDs de `src/data/lugares.js`).
+- [Geocoding API](https://open-meteo.com/en/docs/geocoding-api): busca ciudades y obtiene sus coordenadas.
+- [Forecast API](https://open-meteo.com/en/docs): consulta clima actual y pronóstico semanal.
 
-Estos datos se almacenan en el módulo `auth` de Vuex, junto con:
+La API no requiere una clave para este proyecto.
 
-- `isAuthenticated`: flag que indica si hay sesión activa.
-- `loginError`: mensaje de error de login para mostrar en la vista de inicio de sesión.
+## Requisitos
 
-### Flujo de login y logout
+- Node.js 18 o superior.
+- npm 9 o superior.
+- Conexión a internet para consultar la API meteorológica.
 
-- El usuario ingresa email y contraseña en `/login`.
-- La acción `auth/login` compara las credenciales con un arreglo de usuarios mock.
-- En caso de éxito:
-  - Se guarda el usuario (sin contraseña) en Vuex.
-  - `isAuthenticated` pasa a `true`.
-  - La app redirige a la ruta Home (`/`).
-- En caso de error:
-  - Se define un mensaje claro de error en `loginError` (“Usuario o contraseña incorrectos”).
-  - No se mantiene usuario en el estado.
+## Instalación local
 
-En el header se muestra:
+1. Clona el repositorio:
 
-- El texto “Conectado como: [Nombre]” cuando hay sesión activa.
-- Un botón “Cerrar sesión” que dispara la acción `auth/logout`, limpia el estado del usuario y redirige a `/login`.
+   ```bash
+   git clone https://github.com/zakkdruzer/m8-proy-final-clima-vuex.git
+   ```
 
-## Rutas relacionadas con autenticación y personalización
+2. Entra a la carpeta del proyecto:
 
-La navegación se implementa con Vue Router usando `createWebHashHistory` para compatibilidad con GitHub Pages.
+   ```bash
+   cd m8-proy-final-clima-vuex
+   ```
 
-Rutas principales:
+3. Instala las dependencias:
 
-- `/`  
-  Home pública que muestra la lista de lugares y su clima actual. 
-- `/place/:id`  
-  Detalle ampliado del lugar, con clima actual, pronóstico semanal y estadísticas.
-- `/login`  
-  Vista de formulario de inicio de sesión (email + contraseña), con manejo de éxito y error.
-- `/favoritos`  
-  Vista protegida que muestra los lugares favoritos del usuario autenticado. Solo accesible si `isAuthenticated` es `true`; en caso contrario se redirige a `/login`.
-- `/preferencias`  
-  Vista protegida donde el usuario puede configurar sus preferencias de clima (unidad °C/°F y tema claro/oscuro). También requiere sesión activa y redirige a `/login` si no hay usuario autenticado.
+   ```bash
+   npm install
+   ```
 
-Las rutas protegidas usan un guard global en el router que revisa la propiedad `requiresAuth` en `meta` y el estado `auth/isLoggedIn` en Vuex.
+4. Ejecuta el servidor de desarrollo:
 
-## Personalización según usuario
+   ```bash
+   npm run dev
+   ```
 
-La aplicación ajusta parte de la interfaz según el usuario que ha iniciado sesión:
+5. Abre la dirección mostrada por Vite, normalmente:
 
-- **Lugares favoritos:**  
-  La vista `/favoritos` lee el arreglo de IDs de favoritos desde `auth.userFavorites` y filtra la lista de lugares de `src/data/lugares.js` para mostrar solo los favoritos del usuario.
-- **Preferencias de clima:**  
-  La vista `/preferencias` permite modificar:
-  - Unidad de temperatura (`C` o `F`), que se reutiliza en Home y Favoritos.
-  - Tema visual (`light` o `dark`), que afecta el aspecto general de la app. 
-  Estos datos se actualizan mediante la acción `auth/updatePreferences` y se leen en distintas vistas a través de getters de Vuex.
+   ```text
+   http://localhost:5173/
+   ```
 
-## Cómo ejecutar el proyecto
+## Scripts disponibles
 
-### Requisitos previos
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Inicia el servidor de desarrollo |
+| `npm run build` | Genera el build de producción en `dist` |
+| `npm run preview` | Sirve localmente el build de producción |
+| `npm run deploy` | Publica el contenido de `dist` en GitHub Pages |
 
-- Node.js y npm instalados.
+## Rutas de la aplicación
 
-### Pasos para correr el proyecto localmente
+| Ruta | Descripción |
+|---|---|
+| `/` | Inicio: búsqueda y listado de lugares |
+| `/lugar/:id` | Detalle: clima actual, pronóstico, estadísticas y alertas |
+| `/favoritos` | Lugares guardados por el usuario |
+| `/:pathMatch(.*)*` | Página 404 para rutas inexistentes |
 
-```bash
-# Instalar dependencias
-npm install
+## Estructura del proyecto
 
-# Ejecutar en modo desarrollo
-npm run dev
+```text
+src/
+├── docs/           # Capturas
+├── components/     # Componentes reutilizables
+├── router/         # Configuración de Vue Router
+├── services/       # Cliente Axios y adaptadores de Open-Meteo
+├── store/          # Estado global Vuex
+├── utils/          # Códigos WMO, estadísticas y alertas
+├── views/          # Vistas principales
+├── App.vue
+├── main.js
+└── style.css
 ```
 
-Por defecto la app se sirve en `http://localhost:5173/` (puede variar según la configuración de Vite).
+## Variables de entorno
 
-### Build y preview de producción
+Actualmente el proyecto no requiere variables de entorno porque Open-Meteo no utiliza API key para los endpoints consultados.
 
-```bash
-# Generar build para producción
-npm run build
+Si en el futuro se utiliza una API con credenciales, se debe crear un archivo `.env` basado en `.env.example` y nunca subirlo al repositorio.
 
-# Previsualizar el build
-npm run preview
-```
+## Capturas
 
-## Estado global con Vuex
+![Inicio](./docs/images/home.png)
 
-El estado global se maneja con Vuex e incluye al menos el módulo `auth` para autenticación y preferencias.
+![Detalle](./docs/images/detalle.png)
 
-El módulo `auth` define:
+![Favoritos](./docs/images/favoritos.png)
 
-- `state`: usuario actual, `isAuthenticated`, `loginError`.
-- `mutations`: para iniciar sesión, cerrar sesión y actualizar preferencias.
-- `actions`: para manejar el proceso de login/logout y cambios en preferencias.
-- `getters`: para acceder de forma cómoda a `isLoggedIn`, `userName`, `userPreferences` y `userFavorites`.
+## Autor
 
-Los componentes (Home, Login, Favoritos, Preferencias, header) leen los datos del usuario desde Vuex usando `useStore` y `computed`.
-
----
-
-## Enlace al repo:
-
-https://github.com/zakkdruzer/m7-proy-final-clima-vuex
-
-## Puedes ver el resultado en:
-
-https://zakkdruzer.github.io/m7-proy-final-clima-vuex/#/
+Proyecto realizado por [José](https://github.com/zakkdruzer) como entrega final del Módulo 8 del Bootcamp Front-end.
