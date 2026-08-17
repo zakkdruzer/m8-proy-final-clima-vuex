@@ -1,5 +1,16 @@
 <script setup>
+import { computed } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { useStore } from 'vuex'
+import UnitSelector from '@/components/UnitSelector.vue'
+
+const store = useStore()
+
+const unit = computed(() => store.state.unit)
+
+async function updateUnit(newUnit) {
+  await store.dispatch('changeUnit', newUnit)
+}
 </script>
 
 <template>
@@ -9,15 +20,22 @@ import { RouterLink, RouterView } from 'vue-router'
         Clima SPA
       </RouterLink>
 
-      <nav class="app-header__nav" aria-label="Navegación principal">
-        <RouterLink to="/" class="app-header__link">
-          Inicio
-        </RouterLink>
+      <div class="app-header__actions">
+        <nav class="app-header__nav" aria-label="Navegación principal">
+          <RouterLink to="/" class="app-header__link">
+            Inicio
+          </RouterLink>
 
-        <RouterLink to="/favoritos" class="app-header__link">
-          Favoritos
-        </RouterLink>
-      </nav>
+          <RouterLink to="/favoritos" class="app-header__link">
+            Favoritos
+          </RouterLink>
+        </nav>
+
+        <UnitSelector
+          :model-value="unit"
+          @update:model-value="updateUnit"
+        />
+      </div>
     </header>
 
     <RouterView />

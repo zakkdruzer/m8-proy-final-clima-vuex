@@ -8,6 +8,7 @@ import WeeklyForecast from '@/components/WeeklyForecast.vue'
 import WeeklyStats from '@/components/WeeklyStats.vue'
 import WeatherAlerts from '@/components/WeatherAlerts.vue'
 import { getWeatherInfo } from '@/utils/weatherCodes'
+import FavoriteButton from '@/components/FavoriteButton.vue'
 
 const store = useStore()
 const route = useRoute()
@@ -29,25 +30,37 @@ const canUseCurrentWeather = computed(() => {
 })
 
 async function loadPlaceFromRoute() {
-  if (canUseCurrentWeather.value) {
-    return
-  }
-
   const routeId = String(route.params.id)
 
-  const place = store.state.places.find((currentPlace) => {
+  const placeFromSearch = store.state.places.find((currentPlace) => {
     return currentPlace.id === routeId
   })
 
-  if (place) {
-    await store.dispatch('loadWeather', place)
+  const placeFromStorage = store.state.selectedPlace
+
+  const place = placeFromSearch || (
+    placeFromStorage?.id === routeId
+      ? placeFromStorage
+      : null
+  )
+
+  if (!place) {
+    store.commit(
+      'SET_ERROR',
+      'No encontramos la información de este lugar. Vuelve al inicio y búscalo nuevamente.'
+    )
+
     return
   }
 
-  store.commit(
-    'SET_ERROR',
-    'No encontramos la información de este lugar. Vuelve al inicio y búscalo nuevamente.'
+  const hasWeatherForPlace = (
+    store.state.weather &&
+    store.state.selectedPlace?.id === place.id
   )
+
+  if (!hasWeatherForPlace) {
+    await store.dispatch('loadWeather', place)
+  }
 }
 
 onMounted(() => {
@@ -72,6 +85,7 @@ onMounted(() => {
           , {{ selectedPlace.country }}
         </span>
       </p>
+      <FavoriteButton v-if="selectedPlace" :place="selectedPlace" />
     </section>
 
     <LoadingState v-if="loading" message="Consultando información meteorológica..." />

@@ -17,11 +17,27 @@ const getInitialUnit = () => {
   return savedUnit === "fahrenheit" ? "fahrenheit" : "celsius";
 };
 
+const getInitialSelectedPlace = () => {
+  try {
+    return JSON.parse(localStorage.getItem("weather-selected-place")) || null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitialWeather = () => {
+  try {
+    return JSON.parse(localStorage.getItem("weather-data")) || null;
+  } catch {
+    return null;
+  }
+};
+
 const store = createStore({
   state: () => ({
     places: [],
-    selectedPlace: null,
-    weather: null,
+    selectedPlace: getInitialSelectedPlace(),
+    weather: getInitialWeather(),
 
     loading: false,
     error: null,
@@ -62,10 +78,22 @@ const store = createStore({
 
     SET_SELECTED_PLACE(state, place) {
       state.selectedPlace = place;
+
+      if (place) {
+        localStorage.setItem("weather-selected-place", JSON.stringify(place));
+      } else {
+        localStorage.removeItem("weather-selected-place");
+      }
     },
 
     SET_WEATHER(state, weather) {
       state.weather = weather;
+
+      if (weather) {
+        localStorage.setItem("weather-data", JSON.stringify(weather));
+      } else {
+        localStorage.removeItem("weather-data");
+      }
     },
 
     SET_LOADING(state, value) {
