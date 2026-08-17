@@ -338,10 +338,30 @@ a:focus-visible {
 .weather-preview,
 .forecast-preview,
 .empty-state {
+  width: 100%;
+  min-height: 145px;
+  padding: 1.5rem;
   border: 1px solid #d6e1ea;
   border-radius: 0.8rem;
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(42, 75, 105, 0.06);
+}
+
+.empty-state h2 {
+  margin: 0 0 0.65rem;
+  color: #172033;
+  font-size: 1.45rem;
+  line-height: 1.25;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.empty-state .button-link {
+  margin-top: 1rem;
 }
 
 .place-card {
@@ -772,5 +792,9 @@ a:focus-visible {
 
   .favorite-card__actions > * {
     width: 100%;
+  }
+
+  .empty-state {
+    padding: 1.15rem;
   }
 }
