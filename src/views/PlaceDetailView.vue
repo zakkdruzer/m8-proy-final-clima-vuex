@@ -4,6 +4,8 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import ErrorMessage from '@/components/ErrorMessage.vue'
 import LoadingState from '@/components/LoadingState.vue'
+import WeeklyForecast from '@/components/WeeklyForecast.vue'
+import { getWeatherInfo } from '@/utils/weatherCodes'
 
 const store = useStore()
 const route = useRoute()
@@ -15,6 +17,10 @@ const error = computed(() => store.state.error)
 const temperatureSymbol = computed(
   () => store.getters.temperatureSymbol
 )
+
+const currentWeatherInfo = computed(() => {
+  return getWeatherInfo(weather.value?.current?.weatherCode)
+})
 
 const canUseCurrentWeather = computed(() => {
   return Boolean(selectedPlace.value && weather.value)
@@ -66,22 +72,21 @@ onMounted(() => {
       </p>
     </section>
 
-    <LoadingState
-      v-if="loading"
-      message="Consultando información meteorológica..."
-    />
+    <LoadingState v-if="loading" message="Consultando información meteorológica..." />
 
-    <ErrorMessage
-      v-if="error"
-      :message="error"
-    />
+    <ErrorMessage v-if="error" :message="error" />
 
-    <section
-      v-if="weather && selectedPlace"
-      class="weather-current"
-    >
+    <section v-if="weather && selectedPlace" class="weather-current">
       <h2>Condiciones actuales</h2>
 
+      <p class="weather-current__condition">
+        <span role="img" :aria-label="currentWeatherInfo.label">
+          {{ currentWeatherInfo.icon }}
+        </span>
+
+        {{ currentWeatherInfo.label }}
+      </p>
+      
       <p class="weather-current__temperature">
         {{ weather.current.temperature }}{{ temperatureSymbol }}
       </p>
@@ -111,15 +116,6 @@ onMounted(() => {
       </dl>
     </section>
 
-    <section
-      v-if="weather?.forecast?.length"
-      class="forecast-preview"
-    >
-      <h2>Pronóstico disponible</h2>
-
-      <p>
-        Se recibieron {{ weather.forecast.length }} días de pronóstico.
-      </p>
-    </section>
+    <WeeklyForecast v-if="weather?.forecast" :forecast="weather.forecast" :temperature-symbol="temperatureSymbol" />
   </main>
 </template>

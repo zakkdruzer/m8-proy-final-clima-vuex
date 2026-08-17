@@ -416,3 +416,104 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+.weekly-forecast {
+  margin-top: 1.5rem;
+}
+
+.weekly-forecast__header {
+  margin-bottom: 1rem;
+}
+
+.weekly-forecast__header h2 {
+  margin: 0 0 0.35rem;
+}
+
+.weekly-forecast__header p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.weekly-forecast__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.forecast-day-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #dbe5ef;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+}
+
+.forecast-day-card__date {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.forecast-day-card__icon {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.forecast-day-card h3 {
+  min-height: 2.6rem;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.forecast-day-card__temperatures {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.forecast-day-card__max {
+  color: #b45309;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.forecast-day-card__min {
+  color: #0369a1;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.forecast-day-card__details {
+  display: grid;
+  gap: 0.5rem;
+  margin: auto 0 0;
+}
+
+.forecast-day-card__details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5edf4;
+}
+
+.forecast-day-card__details dt {
+  color: #4b5563;
+  font-size: 0.88rem;
+}
+
+.forecast-day-card__details dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.weather-current__condition {
+  margin: 0.5rem 0;
+  color: #334155;
+  font-weight: 700;
+}
