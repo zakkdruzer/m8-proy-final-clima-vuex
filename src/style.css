@@ -517,3 +517,101 @@ a {
   color: #334155;
   font-weight: 700;
 }
+
+.weekly-stats,
+.weather-alerts {
+  margin-top: 2rem;
+}
+
+.weekly-stats__header,
+.weather-alerts__header {
+  margin-bottom: 1rem;
+}
+
+.weekly-stats__header h2,
+.weather-alerts__header h2 {
+  margin: 0 0 0.35rem;
+}
+
+.weekly-stats__header p,
+.weather-alerts__header p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.weekly-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.2rem;
+  border: 1px solid #dbe5ef;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+}
+
+.stat-card__label {
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.stat-card__value {
+  color: #0f4c81;
+  font-size: 1.55rem;
+}
+
+.weather-alerts__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.weather-alert {
+  padding: 1rem 1.2rem;
+  border-left: 5px solid currentColor;
+  border-radius: 0.5rem;
+}
+
+.weather-alert h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+
+.weather-alert p {
+  margin: 0;
+}
+
+.weather-alert--success {
+  color: #166534;
+  background-color: #dcfce7;
+}
+
+.weather-alert--info {
+  color: #075985;
+  background-color: #e0f2fe;
+}
+
+.weather-alert--warning {
+  color: #92400e;
+  background-color: #fef3c7;
+}
+
+.weather-alert--danger {
+  color: #991b1b;
+  background-color: #fee2e2;
+}
+
+@media (max-width: 700px) {
+  .weekly-stats__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 450px) {
+  .weekly-stats__grid {
+    grid-template-columns: 1fr;
+  }
+}

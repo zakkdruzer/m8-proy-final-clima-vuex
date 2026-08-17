@@ -5,6 +5,8 @@ import { useStore } from 'vuex'
 import ErrorMessage from '@/components/ErrorMessage.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import WeeklyForecast from '@/components/WeeklyForecast.vue'
+import WeeklyStats from '@/components/WeeklyStats.vue'
+import WeatherAlerts from '@/components/WeatherAlerts.vue'
 import { getWeatherInfo } from '@/utils/weatherCodes'
 
 const store = useStore()
@@ -86,7 +88,7 @@ onMounted(() => {
 
         {{ currentWeatherInfo.label }}
       </p>
-      
+
       <p class="weather-current__temperature">
         {{ weather.current.temperature }}{{ temperatureSymbol }}
       </p>
@@ -117,5 +119,6 @@ onMounted(() => {
     </section>
 
     <WeeklyForecast v-if="weather?.forecast" :forecast="weather.forecast" :temperature-symbol="temperatureSymbol" />
+    <WeatherAlerts v-if="weather?.forecast" :forecast="weather.forecast" />
   </main>
 </template>
